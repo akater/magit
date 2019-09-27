@@ -186,11 +186,7 @@ Also see `magit-process-find-password-functions'."
   "List of functions to try in sequence to get a password.
 
 These functions may be called when git asks for a password, which
-is detected using `magit-process-password-prompt-regexps'.  They
-are called if and only if matching the prompt resulted in the
-value of the 99th submatch to be non-nil.  Therefore users can
-control for which prompts these functions should be called by
-putting the host name in the 99th submatch, or not.
+is detected using `magit-process-password-prompt-regexps'.
 
 If the functions are called, then they are called in the order
 given, with the host name as only argument, until one of them
@@ -862,9 +858,8 @@ from the user."
                       magit-process-password-prompt-regexps string)))
     (process-send-string
      process (magit-process-kill-on-abort process
-               (concat (or (when-let ((key (match-string 99 string)))
-                             (run-hook-with-args-until-success
-                              'magit-process-find-password-functions key))
+               (concat (or (run-hook-with-args-until-success
+                              'magit-process-find-password-functions string)
                            (read-passwd prompt))
                        "\n")))))
 
